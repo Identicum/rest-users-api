@@ -1,5 +1,6 @@
 package com.identicum.controllers;
 
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,7 +61,7 @@ public class UsersController
 	public ResponseEntity<User> update(@PathVariable(value = "id") Long userId, 
 	                                       @Valid @RequestBody User userDetails) {
 		
-		log.debug("Accediendo a update() con User = ", userDetails);
+		log.debug("Accediendo a update() con User = {}", userDetails.toString());
 		User user = userRepository.findOne(userId);
 	    if(user == null) 
 	    {
@@ -75,5 +77,23 @@ public class UsersController
 	    return ResponseEntity.ok(updatedUser);
 	}
 	
+	@PatchMapping("/{id}")
+	public ResponseEntity<User> patch(@PathVariable(value = "id") Long userId, 
+	                                       @RequestBody Map<String, String> changes) {
+		
+		log.debug("Accediendo a update() con deltas = {}", changes.toString());
+		User user = userRepository.findOne(userId);
+	    if(user == null) 
+	    {
+	        return ResponseEntity.notFound().build();
+	    }
+	    if(changes.containsKey("firstName")) user.setFirstName(changes.get("firstName"));
+	    if(changes.containsKey("lastName")) user.setLastName(changes.get("lastName"));
+	    if(changes.containsKey("username")) user.setUsername(changes.get("username"));
+	    if(changes.containsKey("email")) user.setEmail(changes.get("email"));
+	    
+	    User updatedUser = userRepository.save(user);
+	    return ResponseEntity.ok(updatedUser);
+	}
 
 }
