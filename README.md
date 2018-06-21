@@ -19,7 +19,7 @@ mvn clean package
 3. Run the application
 
 ```
-java -jar target/users-rest-api-0.1.0.jar
+java -jar target/rest-users-api-0.1.1.jar
 ```
 
 # Rest Methods
