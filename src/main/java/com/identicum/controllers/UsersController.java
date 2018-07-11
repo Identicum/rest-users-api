@@ -8,7 +8,9 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.identicum.models.Role;
 import com.identicum.models.User;
+import com.identicum.service.RoleRepository;
 import com.identicum.service.UserRepository;
 
 @RestController
@@ -30,6 +34,9 @@ public class UsersController
 	
 	@Autowired
     UserRepository userRepository;
+	
+	@Autowired
+    RoleRepository roleRepository;
 	
 	@GetMapping(value = {"", "/"})
 	public Iterable<User> index(@RequestParam("username") Optional<String> username)
@@ -51,10 +58,15 @@ public class UsersController
 	}
 	
 	@PostMapping(value = {"", "/"})
-	public User create(@Valid @RequestBody User user) 
+	public ResponseEntity<?> create(@Valid @RequestBody User user) 
 	{
 		log.debug("Accediendo a create() con User = {}", user.toString());
-	    return userRepository.save(user);
+		if( userRepository.findByUsernameIgnoreCase( user.getUsername() ).size() > 0)
+		{
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+		userRepository.save(user);
+	    return ResponseEntity.ok().body(user);
 	}
 	
 	@PutMapping("/{id}")
@@ -94,6 +106,59 @@ public class UsersController
 	    
 	    User updatedUser = userRepository.save(user);
 	    return ResponseEntity.ok(updatedUser);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> delete(@PathVariable(value = "id") Long userId)
+	{
+		log.debug("Accediendo a delete() con user = {}", userId);
+		User user = userRepository.findOne(userId);
+	    if(user == null) 
+	    {
+	        return ResponseEntity.notFound().build();
+	    }
+	    userRepository.delete(user);
+	    return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/{id}/roles")
+	public ResponseEntity<User> assignRole(@PathVariable(value = "id") Long userId, @RequestBody Role role) 
+	{
+		log.debug("Accediendo a assignRole() con User = {} y Role = {}", userId, role.getId());
+		User user = userRepository.findOne(userId);
+	    if(user == null) 
+	    {
+	        return ResponseEntity.notFound().build();
+	    }
+	    
+	    role = roleRepository.findOne(role.getId());
+	    if(role == null) 
+	    {
+	        return ResponseEntity.notFound().build();
+	    }
+	    
+	    user.getRoles().add(role);
+	    return ResponseEntity.ok(userRepository.save(user));
+	}
+	
+	@DeleteMapping("/{id}/roles/{roleId}")
+	public ResponseEntity<User> revokeRole(@PathVariable(value = "id") Long userId, @PathVariable(value = "roleId") Long roleId) 
+	{
+		log.debug("Accediendo a revokeRole() con User = {} y Role = {}", userId, roleId);
+		User user = userRepository.findOne(userId);
+	    if(user == null) 
+	    {
+	        return ResponseEntity.notFound().build();
+	    }
+	    
+	    Role role = roleRepository.findOne(roleId);
+	    if(role == null) 
+	    {
+	        return ResponseEntity.notFound().build();
+	    }
+	    
+	    user.getRoles().remove(role);
+	    return ResponseEntity.ok(userRepository.save(user));
 	}
 
 }
