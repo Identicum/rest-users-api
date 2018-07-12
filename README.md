@@ -6,20 +6,14 @@ A sample CRUD using Spring Rest API to manage users
 1. Clone this repository
 
 ```
-git clone git@github.com:Identicum/users-rest-api.git
+git clone git@github.com:Identicum/rest-users-api.git
 ```
 
-2. Compile the sources
+2. Compile the sources and run the application
 
 ```
-cd users-rest-api
-mvn clean package
-```
-
-3. Run the application
-
-```
-java -jar target/users-rest-api-0.1.0.jar
+cd rest-users-api
+mvn clean spring-boot:run
 ```
 
 # Rest Methods
