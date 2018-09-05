@@ -21,7 +21,10 @@ mvn clean spring-boot:run
 * GET /users --> List all users
 * GET /users/id --> Get information from given user
 * POST /users --> Create new user
-* PUT /users/id --> Update data for given user id
+* PUT /users/id --> Update all data for given user id
+* PATCH /users/id --> Update sent data for given user id
+* POST /authenticate --> Authenticate user
+
 
 # User attributes
 
@@ -29,3 +32,9 @@ mvn clean spring-boot:run
 * username: String
 * firstName: String
 * lastName: String
+* email: String
+
+
+# Swagger access
+
+Api documented with Swagger. You can access to the UI on http://localhost:8081/swagger-ui.html

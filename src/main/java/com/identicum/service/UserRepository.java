@@ -10,8 +10,10 @@ import com.identicum.models.User;
 
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
+	List<User> findByUsernameAndPassword(String username, String password);
+	
 	List<User> findByUsernameContaining(@Param("username") String username);
 	
-	List<User> findByUsernameIgnoreCase(String username);
-
+	User findByUsernameIgnoreCase(String username);
+	
 }
