@@ -12,7 +12,6 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.10.RELEASE</version>
 	</parent>
-	<packaging>war</packaging>
 
 	<dependencies>
 		<dependency>
