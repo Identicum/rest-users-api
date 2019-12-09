@@ -4,11 +4,10 @@ RUN mvn install -DskipTests
 
 # ############################################################################
 # Build runtime image
-FROM identicum/centos-tomcat:latest
+FROM identicum/centos-java:latest
 MAINTAINER Gustavo J Gallardo <ggallard@identicum.com>
 
 RUN yum -y install unzip
-COPY --from=build-env /source/target/rest-users-api.war /tmp/
-RUN unzip -qq /tmp/rest-users-api.war -d /usr/local/tomcat/webapps/rest-users-api && \
-  rm -f /tmp/rest-users-api.war && \
-  echo "<% response.sendRedirect(\"/rest-users-api/\"); %>" > webapps/ROOT/index.jsp
+COPY --from=build-env /source/target/rest-users-api-0.1.1.jar /app.jar
+EXPOSE 8081
+ENTRYPOINT ["java","-jar","/app.jar"]

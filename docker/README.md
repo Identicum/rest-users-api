@@ -17,5 +17,7 @@ Build `identicum/rest-users-api` from source:
 Run the image, binding associated ports, and defining your custom variables as environment variables:
 
     docker run -d \
-	    -p 8080:8080 \
+      --name rest-users-api \
+      --restart=always \
+      -p 8081:8081 \
       identicum/rest-users-api
