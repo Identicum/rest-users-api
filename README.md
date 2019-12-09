@@ -1,4 +1,4 @@
-# users-rest-api
+# rest-users-api
 A sample CRUD using Spring Rest API to manage users
 
 # Installation
@@ -37,4 +37,4 @@ mvn clean spring-boot:run
 
 # Swagger access
 
-Api documented with Swagger. You can access to the UI on http://localhost:8081/swagger-ui.html
+API documented with Swagger. You can access to the UI on http://localhost:8081/swagger-ui.html
