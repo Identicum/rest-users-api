@@ -1,9 +1,12 @@
 package com.identicum;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.identicum.service.UserRepository;
 import com.identicum.service.UserService;
 
 import org.slf4j.Logger;
@@ -19,6 +22,9 @@ public class Application {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserRepository userRepository;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public static void main(String[] args) {
@@ -27,7 +33,11 @@ public class Application {
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadUsers() throws JsonParseException, JsonMappingException, IOException {
-        log.debug("Loading users from json file");
-        userService.loadUsersFromFile();
+        URL fileUrl = this.getClass().getClassLoader().getResource("users.json");
+        if (this.userRepository.count() == 0 && fileUrl != null) {
+            File file = new File(fileUrl.getFile());
+            log.debug("Loading users from json file");
+            userService.loadUsersFromFile(file);
+        }
     }
 }
