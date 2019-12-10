@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "username": "ealonso",
+        "firstName": "Ezequiel",
+        "lastName": "Alonso",
+        "email": "ealonso@identicum.com",
+        "password": "f8bd6bf0b3f9caf71a4f3bc10dc4fabe",
+        "active": true
+    },
+    {
+        "id": 2,
+        "username": "nrossi",
+        "firstName": "Nicolas",
+        "lastName": "Rossi",
+        "email": "nrossi@identicum.com",
+        "password": "f8bd6bf0b3f9caf71a4f3bc10dc4fabe",
+        "active": true
+    }
+]
