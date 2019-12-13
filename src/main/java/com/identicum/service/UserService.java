@@ -1,5 +1,6 @@
 package com.identicum.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,15 +22,13 @@ public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void loadUsersFromFile() throws JsonParseException, JsonMappingException, IOException {
-        if (this.userRepository.count() == 0) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<User> users = objectMapper.readValue(this.getClass().getClassLoader().getResource("users.json"), new TypeReference<List<User>>(){});
-            
-            for (User user : users) {
-                log.debug("Reading user {}", user.getUsername());
-                userRepository.save(user);
-            }
+    public void loadUsersFromFile(File file) throws JsonParseException, JsonMappingException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<User> users = objectMapper.readValue(file, new TypeReference<List<User>>(){});
+        
+        for (User user : users) {
+            log.debug("Reading user {}", user.getUsername());
+            userRepository.save(user);
         }
-	}
+    }
 }
