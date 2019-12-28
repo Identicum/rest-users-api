@@ -1,8 +1,6 @@
 package com.identicum;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -16,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ClassPathResource;
 
 @SpringBootApplication
 public class Application {
@@ -33,11 +32,10 @@ public class Application {
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadUsers() throws JsonParseException, JsonMappingException, IOException {
-        URL fileUrl = this.getClass().getClassLoader().getResource("users.json");
-        if (this.userRepository.count() == 0 && fileUrl != null) {
-            File file = new File(fileUrl.getFile());
-            log.debug("Loading users from json file");
-            userService.loadUsersFromFile(file);
+        ClassPathResource resource = new ClassPathResource("users.json");
+        if (this.userRepository.count() == 0 && resource.exists()) {
+            log.debug("Loading users from json file ...");
+            userService.loadUsersFromFile(resource.getInputStream());
         }
     }
 }

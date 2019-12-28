@@ -1,7 +1,7 @@
 package com.identicum.service;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -22,9 +22,9 @@ public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void loadUsersFromFile(File file) throws JsonParseException, JsonMappingException, IOException {
+    public void loadUsersFromFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<User> users = objectMapper.readValue(file, new TypeReference<List<User>>(){});
+        List<User> users = objectMapper.readValue(inputStream, new TypeReference<List<User>>(){});
         
         for (User user : users) {
             log.debug("Reading user {}", user.getUsername());
