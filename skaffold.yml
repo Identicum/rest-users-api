@@ -1,0 +1,16 @@
+apiVersion: skaffold/v2alpha1
+kind: Config
+# Enforce SKaffold to use Jib
+build:
+  local:
+    push: false
+ # Generated artifact
+  artifacts:
+    - image: identicum/rest-users-api
+      context: .
+      docker:	# 	beta describes an artifact built from a Dockerfile.
+        dockerfile: docker/Dockerfile
+deploy:
+  kubectl:
+    manifests:
+      - k8s/*
