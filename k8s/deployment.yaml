@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-users-api-deployment
+spec:
+  selector:
+    matchLabels:
+      app: rest-users-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rest-users-api
+    spec:
+      containers:
+      - name: rest-users-api
+        image: identicum/rest-users-api
+        ports:
+        - containerPort: 8081
