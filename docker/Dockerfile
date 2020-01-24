@@ -7,10 +7,10 @@
 # RUN chmod +x docker-common/wait-for-it.sh
 # COPY target/*.jar target/app.jar
 
-# FROM identicum/centos-java-maven as build
-# WORKDIR /app
-# RUN git clone https://github.com/Identicum/rest-users-api.git .
-# RUN mvn install -DskipTests
+FROM identicum/centos-java-maven as build
+WORKDIR /app
+RUN git clone https://github.com/Identicum/rest-users-api.git .
+RUN mvn install -DskipTests
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
