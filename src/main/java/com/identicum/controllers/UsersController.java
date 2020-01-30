@@ -28,11 +28,15 @@ import com.identicum.models.User;
 import com.identicum.service.RoleRepository;
 import com.identicum.service.UserRepository;
 
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @CrossOrigin
+@GraphQLApi
 @RestController
 @RequestMapping("/users")
 public class UsersController
@@ -44,6 +48,8 @@ public class UsersController
 	
 	@Autowired
     RoleRepository roleRepository;
+	
+	//REST Endpoints
 	
 	@ApiOperation(value = "List all user matching optional paramter username",response = Iterable.class)
 	@GetMapping(value = {"", "/"})
@@ -148,7 +154,7 @@ public class UsersController
 	        return ResponseEntity.notFound().build();
 	    }
 	    
-	    role = roleRepository.findOne(role.getId());
+	    role = roleRepository.findById(role.getId()).orElse(null);
 	    if(role == null) 
 	    {
 	        return ResponseEntity.notFound().build();
@@ -168,7 +174,7 @@ public class UsersController
 	        return ResponseEntity.notFound().build();
 	    }
 	    
-	    Role role = roleRepository.findOne(roleId);
+	    Role role = roleRepository.findById(roleId).orElse(null);
 	    if(role == null) 
 	    {
 	        return ResponseEntity.notFound().build();
@@ -183,12 +189,125 @@ public class UsersController
 		if(Utils.isNumber(identifier))
 		{
 			Long userId = Long.parseLong(identifier);
-			return userRepository.findOne(userId);
+			return userRepository.findById(userId).orElse(null);
 		}
 		else
 		{
 			return userRepository.findByUsernameIgnoreCase(identifier);
 		}
+	}
+	
+	
+	//GraphQL Endpoints
+    
+	@GraphQLQuery
+	public Iterable<User> getUsers(Optional<String> username)
+	{
+		log.debug("Accediendo a getUsers() con username = {}", username);
+		return userRepository.findByUsernameContaining(username.orElse(""));
+	}
+    @GraphQLQuery
+	public User getUser(Long userId) 
+	{
+		log.debug("Accediendo a getUser() con id/username = {}", userId);
+	    return this.userRepository.findById(userId).orElse(null);
+	}
+	
+    @GraphQLMutation
+	public User createUser(User user) 
+	{
+		log.debug("Accediendo a createUser() con User = {}", user.toString());
+		user.hashPassword();
+	    return userRepository.save(user);
+	}
+	
+    @GraphQLMutation
+	public User deleteUser(Long userId)
+	{
+		log.debug("Accediendo a deleteUser() con user = {}", userId);
+		User user = this.userRepository.findById(userId).orElse(null);
+	    if(user != null) 
+	    {
+		    userRepository.delete(user);
+	    }
+	    return user;
+	}
+	
+    @GraphQLMutation
+	public User updateUser(Long userId, @Valid User userDetails) {
+		
+		log.debug("Accediendo a updateUser() con User = {}", userDetails.toString());
+		User user = this.userRepository.findById(userId).orElse(null);
+	    if(user == null) 
+	    {
+	        return null;
+	    }
+	    user.setFirstName(userDetails.getFirstName());
+	    user.setLastName(userDetails.getLastName());
+	    user.setUsername(userDetails.getUsername());
+	    user.setEmail(userDetails.getEmail());
+	    user.setActive(userDetails.getActive());
+	    
+	    return userRepository.save(user);
+	}
+    
+    @GraphQLMutation
+	public User patchUser(Long userId, Map<String, String> changes) {
+		
+		log.debug("Accediendo a patchUser() con deltas = {}", changes.toString());
+		User user = this.userRepository.findById(userId).orElse(null);
+	    if(user == null) 
+	    {
+	        return null;
+	    }
+	    if(changes.containsKey("firstName")) user.setFirstName(changes.get("firstName"));
+	    if(changes.containsKey("lastName")) user.setLastName(changes.get("lastName"));
+	    if(changes.containsKey("username")) user.setUsername(changes.get("username"));
+	    if(changes.containsKey("email")) user.setEmail(changes.get("email"));
+	    if(changes.containsKey("active")) user.setActive(Boolean.valueOf(changes.get("active")));
+	    if(changes.containsKey("password")) user.setPassword( User.hashPassword( changes.get("password") ));
+	    
+	    return userRepository.save(user);
+	}
+    
+    @GraphQLMutation
+	public User provideRole (Long userId, Long roleId) 
+	{
+		log.debug("Accediendo a addRole() con User = {} y Role = {}", userId, roleId);
+		User user =  this.userRepository.findById(userId).orElse(null);
+	    if(user == null) 
+	    {
+	        return null;
+	    }
+	    
+	    Role role = roleRepository.findById(roleId).orElse(null);
+	    if(role == null) 
+	    {
+	        return null;
+	    }
+	    
+	    user.getRoles().add(role);
+	    return userRepository.save(user);
+	}
+	
+    @GraphQLMutation
+	public User removeRole(Long userId, Long roleId) 
+	{
+		log.debug("Accediendo a removeRole() con User = {} y Role = {}", userId, roleId);
+		User user =  this.userRepository.findById(userId).orElse(null);
+	    if(user == null) 
+	    {
+	    	return null;
+	    }
+	    
+	    Role role = roleRepository.findById(roleId).orElse(null);
+	    if(role == null) 
+	    {
+	        return null;
+	    }
+	    
+	    user.getRoles().remove(role);
+	    return userRepository.save(user);
 	}
 
 }
