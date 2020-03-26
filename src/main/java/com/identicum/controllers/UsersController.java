@@ -186,15 +186,16 @@ public class UsersController
 	
 	private User loadUser(String identifier)
 	{
-		if(Utils.isNumber(identifier))
-		{
+		log.debug("Searching user by username: {}", identifier);
+		User user = userRepository.findByUsernameIgnoreCase(identifier);
+
+		if(user == null && Utils.isNumber(identifier)){
+			log.debug("User not found by username. Searching user by id: {}", identifier);
 			Long userId = Long.parseLong(identifier);
-			return userRepository.findById(userId).orElse(null);
+			user = userRepository.findById(userId).orElse(null);
 		}
-		else
-		{
-			return userRepository.findByUsernameIgnoreCase(identifier);
-		}
+
+		return user;
 	}
 	
 	
