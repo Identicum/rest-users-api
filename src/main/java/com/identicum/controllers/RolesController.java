@@ -22,6 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.identicum.models.Role;
 import com.identicum.service.RoleRepository;
 
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+
+@GraphQLApi
 @RestController
 @RequestMapping("/roles")
 public class RolesController
@@ -30,6 +35,8 @@ public class RolesController
 	
 	@Autowired
     RoleRepository roleRepository;
+	
+	//REST Endpoints
 	
 	@GetMapping(value = {"", "/"})
 	public Iterable<Role> index(@RequestParam("name") Optional<String> rolename)
@@ -42,7 +49,7 @@ public class RolesController
 	public ResponseEntity<Role> get(@PathVariable(value = "id") Long roleId) 
 	{
 		log.debug("Accediendo a get() con id = {}", roleId);
-	    Role role = roleRepository.findOne(roleId);
+	    Role role = roleRepository.findById(roleId).orElse(null);
 	    if(role == null) 
 	    {
 	        return ResponseEntity.notFound().build();
@@ -62,7 +69,7 @@ public class RolesController
 	                                       @Valid @RequestBody Role roleDetails) {
 		
 		log.debug("Accediendo a update() con Role = {}", roleDetails.toString());
-		Role role = roleRepository.findOne(roleId);
+		Role role = roleRepository.findById(roleId).orElse(null);
 	    if(role == null) 
 	    {
 	        return ResponseEntity.notFound().build();
@@ -78,7 +85,7 @@ public class RolesController
 	                                       @RequestBody Map<String, String> changes) {
 		
 		log.debug("Accediendo a update() con deltas = {}", changes.toString());
-		Role role = roleRepository.findOne(roleId);
+		Role role = roleRepository.findById(roleId).orElse(null);
 	    if(role == null) 
 	    {
 	        return ResponseEntity.notFound().build();
@@ -87,6 +94,70 @@ public class RolesController
 	    
 	    roleRepository.save(role);
 	    return ResponseEntity.ok(role);
+	}
+	
+	
+	//GraphQL Endpoints
+	
+	@GraphQLQuery
+	public Iterable<Role> getRoles(Optional<String> rolename)
+	{
+		log.debug("Accediendo a getRoles() con name = {}", rolename);
+		return roleRepository.findByNameContaining(rolename.orElse(""));
+	}
+	
+	@GraphQLQuery
+	public Role getRole(Long roleId) 
+	{
+		log.debug("Accediendo a getRole() con id = {}", roleId);
+	    return roleRepository.findById(roleId).get();
+	}
+
+	@GraphQLMutation
+	public Role createRole(@Valid Role role) 
+	{
+		log.debug("Accediendo a createRole() con Role = {}", role.toString());
+	    return roleRepository.save(role);
+	}
+	
+	@GraphQLMutation	
+	public Role deleteRole(Long roleId)
+	{
+		log.debug("Accediendo a deleteRole() con user = {}", roleId);
+		Role role = roleRepository.findById(roleId).orElse(null);
+		if(role == null) {
+			return null;
+		}
+		roleRepository.delete(role);
+	    return role;
+	}
+	
+	@GraphQLMutation
+	public Role updateRole(Long roleId, @Valid Role roleDetails) {
+		
+		log.debug("Accediendo a updateRole() con Role = {}", roleDetails.toString());
+		Role role = roleRepository.findById(roleId).orElse(null);
+	    if(role == null) 
+	    {
+	        return null;
+	    }
+	    role.setName(roleDetails.getName());
+	    
+	    return roleRepository.save(role);
+	}
+	
+	@GraphQLMutation
+	public Role patchRole(Long roleId, Map<String, String> changes) {
+		
+		log.debug("Accediendo a patchRole() con deltas = {}", changes.toString());
+		Role role = roleRepository.findById(roleId).orElse(null);
+	    if(role == null) 
+	    {
+	        return null;
+	    }
+	    if(changes.containsKey("name")) role.setName(changes.get("name"));
+	    
+	    return roleRepository.save(role);
 	}
 
 }
