@@ -3,17 +3,32 @@ A sample CRUD using Spring Rest API to manage users
 
 # Installation
 
-1. Clone this repository
+- Clone this repository
 
-```
+```bash
 git clone git@github.com:Identicum/rest-users-api.git
 ```
 
-2. Compile the sources and run the application
+- Compile the sources and run the application
 
-```
+```bash
 cd rest-users-api
 mvn clean spring-boot:run
+```
+
+# Protecting the API
+
+Since it was designed for testing purposes the API is public by default. 
+You can protect the API with spring profiles:
+
+## Basic Authentication
+
+Edit default username and password in the [application-basic.properties](src/main/resources/application-basic.properties) file 
+and run the application as follows:
+
+```bash
+cd rest-users-api
+mvn clean spring-boot:run -spring.profiles.active=basic
 ```
 
 # Rest Methods
