@@ -62,7 +62,7 @@ Docker and Kubernetes DevOps artifacts for Spring API
 
 ## Contents
 
-* `docker/` -  Contains the Dockerfiles for API.
+* `/` -  Contains the Dockerfiles for API.
 * `docker-mysql/` -  Contains a docker-compose example for the API and mysql repository.
 * `helm/` - Helm charts.
 * `k8s/` - Kubernetes artifacts.
@@ -70,8 +70,17 @@ Docker and Kubernetes DevOps artifacts for Spring API
 
 
 ## Sample
-
 * Knowledge of Kubernetes, Skaffold or Helm is assumed.
+
+### Run the container
+
+Run the image, binding associated ports, and defining your custom variables as environment variables:
+
+    docker run -d \
+      --name rest-users-api \
+      --restart=always \
+      -p 8081:8081 \
+      identicum/rest-users-api
 
 ### Helm
 
