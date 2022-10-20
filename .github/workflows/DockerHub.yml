@@ -25,11 +25,12 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
   build-push:
+    needs: analyze
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Set current date as env variable
-      run: echo "TODAY::$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      run: echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
     - name: Docker Hub login
       run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
     - name: Build image 
