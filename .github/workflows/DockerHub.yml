@@ -3,16 +3,37 @@ on:
     branches:
     - main
 env:
-  CONTAINER_IMAGE: identicum/${{github.event.repository.name}}:latest
+  CONTAINER_IMAGE: identicum/${{github.event.repository.name}}
 jobs:
-  build-push:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+build-push:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Set current date as env variable
+      run: echo "TODAY::$(date +'%Y-%m-%d')" >> $GITHUB_ENV
     - name: Docker Hub login
       run: docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_PASSWORD}}
     - name: Build image 
-      run: docker build -t $CONTAINER_IMAGE .
+      run: docker build -t $CONTAINER_IMAGE:$TODAY .
       working-directory: .
     - name: Push to Docker Hub
-      run: docker push $CONTAINER_IMAGE
+      run: docker push $CONTAINER_IMAGE:$TODAY
