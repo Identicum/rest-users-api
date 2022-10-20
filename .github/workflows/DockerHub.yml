@@ -24,7 +24,7 @@ jobs:
         languages: ${{ matrix.language }}
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-build-push:
+  build-push:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
