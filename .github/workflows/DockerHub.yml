@@ -40,4 +40,4 @@ jobs:
       run: docker build -t $CONTAINER_IMAGE:$TODAY -t $CONTAINER_IMAGE:latest .
       working-directory: .
     - name: Push to Docker Hub
-      run: docker push $CONTAINER_IMAGE:$TODAY
+      run: docker push $CONTAINER_IMAGE:$TODAY && docker push $CONTAINER_IMAGE:latest
