@@ -12,6 +12,7 @@ services:
   rest-users-api:
     container_name: rest-users-api
     image: ghcr.io/identicum/rest-users-api:latest
+    pull_policy: always
     ports:
       - 8081:8081
     depends_on:
