@@ -1,11 +1,13 @@
 version: '3'
 services:
-  mysql:
-    container_name: mysql
-    image: mysql:5.7
+  db:
+    container_name: db
+    image: mariadb:10.11
     environment:
-     - MYSQL_DATABASE=test
-     - MYSQL_ROOT_PASSWORD=password
+     - MARIADB_USER=dbuser
+     - MARIADB_PASSWORD=dbpassword
+     - MARIADB_ROOT_PASSWORD=rootpwd
+     - MARIADB_DATABASE=restusersdb
     ports:
      - "3306:3306"
     restart: always
@@ -22,10 +24,10 @@ services:
     ports:
       - 8081:8081
     depends_on:
-      mysql:
+      db:
         condition: service_healthy
     environment:
-    - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/test?useSSL=false
-    - SPRING_DATASOURCE_USERNAME=root
-    - SPRING_DATASOURCE_PASSWORD=password
+    - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/restusersdb?useSSL=false
+    - SPRING_DATASOURCE_USERNAME=dbuser
+    - SPRING_DATASOURCE_PASSWORD=dbpassword
     - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
