@@ -9,6 +9,12 @@ services:
     ports:
      - "3306:3306"
     restart: always
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        interval: 5s
+        timeout: 1s
+        retries: 5
+        start_period: 5s
   rest-users-api:
     container_name: rest-users-api
     image: ghcr.io/identicum/rest-users-api:latest
@@ -16,9 +22,10 @@ services:
     ports:
       - 8081:8081
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
     - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/test?useSSL=false
     - SPRING_DATASOURCE_USERNAME=root
     - SPRING_DATASOURCE_PASSWORD=password
-    - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.jdbc.Driver
+    - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
