@@ -3,6 +3,6 @@
 /.settings/
 /.classpath
 /.project
-.vscode/settings.json
+.vscode/*
 .idea
 *.iml
