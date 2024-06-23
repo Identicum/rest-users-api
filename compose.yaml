@@ -1,8 +1,8 @@
-version: '3'
 services:
   db:
     container_name: db
-    image: mariadb:10.11
+    image: ghcr.io/identicum/mariadb:10
+    pull_policy: always
     environment:
      - MARIADB_USER=dbuser
      - MARIADB_PASSWORD=dbpassword
@@ -11,16 +11,11 @@ services:
     ports:
      - "3306:3306"
     restart: always
-    healthcheck:
-        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-        interval: 5s
-        timeout: 1s
-        retries: 5
-        start_period: 5s
+
   rest-users-api:
     container_name: rest-users-api
     image: ghcr.io/identicum/rest-users-api:latest
-    pull_policy: always
+    # pull_policy: always
     ports:
       - 8081:8081
     depends_on:
