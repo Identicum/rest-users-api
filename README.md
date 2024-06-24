@@ -39,4 +39,4 @@ mvn clean spring-boot:run -spring.profiles.active=basic
 
 # Swagger access
 
-API documented with Swagger. You can access to the UI on http://localhost:8081/swagger-ui.html
+API documented with Swagger. You can access to the UI on http://localhost:8080/swagger-ui.html
